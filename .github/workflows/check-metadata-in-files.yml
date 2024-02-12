@@ -1,4 +1,4 @@
-name: Get files in in Pull Requests
+name: Check file metadata in Pull Requests
 
 on:
   pull_request:
