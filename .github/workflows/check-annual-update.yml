@@ -1,0 +1,68 @@
+name: Annual review
+
+on:
+#  schedule:
+#    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+jobs:
+  changed_files:
+    runs-on: ubuntu-latest
+    name: Create a new issue with tutorials that need their annual review
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set environment variables
+        run: |
+          echo "CURRENT_MONTH=$(date +'%Y-%m-%d' | cut -d'-' -f2)" >> $GITHUB_ENV
+          echo "CURRENT_MONTH_WRITTEN=$(date -d "$(date +'%Y-%m-%d' | cut -d'-' -f2)" "+%B")" >> $GITHUB_ENV
+      
+      - name: Find Markdown files and extract date, title and author
+        run: |
+          # Get all Markdown files
+          md_files=$(find ./tutorials -type f -name "*.en.md")
+
+          # Run the commands below for each individual file
+          for file in $md_files; do 
+          
+            # Remove files from previous loops
+            rm -rf metadata.md
+            
+            # Extract metadata from Markdown file and save the metadata in a new file
+            metadata=$(awk '/^---$/{f=!f;next}f' "$file" | yq eval -o=json -)
+            echo "$metadata" >> metadata.md
+            
+            # Extract date/path/title/author from the metadata
+            tutorial_date=$(grep -oP '"date": "\K[^"]+' metadata.md)
+            path=$(grep -oP '"slug": "\K[^"]+' metadata.md)
+            title=$(grep -oP '"title": "\K[^"]+' metadata.md)
+            author=$(grep -oP '"author_link": "\K[^"]+' metadata.md | sed 's|^https://github.com/||')
+            
+            # Compare CURRENT_MONTH with tutorial_month
+            tutorial_month=$(echo $tutorial_date | cut -d'-' -f2)
+            if [ "$CURRENT_MONTH" == "$tutorial_month" ]; then
+                # Check if the author is "hetzneronline"
+                if [ "$author" == "hetzneronline" ]; then
+                    echo "| $path | $title | Hetzner |" >> .github/scripts-metadata/summary-tutorials-annual-review.md
+                else
+                    echo "| $path | $title | @$author |" >> .github/scripts-metadata/summary-tutorials-annual-review.md
+                fi
+            else
+              continue
+            fi
+          done
+          
+          echo "<br>" >> .github/scripts-metadata/summary-tutorials-annual-review.md
+          echo "All authors, please do the following:<br><br><ul><li>Take a look at your tutorial and check if it still works.</li><li>Comment on this issue if your tutorial needs an update or not.</li><li>If your tutorial does need an update, please let us know if you plan to update the tutorial yourself. If not, we might need to delete your tutorial.</li></ul>" >> .github/scripts-metadata/summary-tutorials-annual-review.md
+          cat .github/scripts-metadata/summary-tutorials-annual-review.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Create a new issue
+        run: |
+          gh issue create \
+            --title "Tutorials written over a year ago ($CURRENT_MONTH_WRITTEN)" \
+            --body "$(cat .github/scripts-metadata/summary-tutorials-annual-review.md)"
+        env:
+          GH_TOKEN: ${{ github.token }}
