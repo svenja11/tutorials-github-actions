@@ -22,6 +22,11 @@ jobs:
       
       - name: Find Markdown files and extract date, title and author
         run: |
+          # Create summary file
+          echo "The following tutorials were written over a year ago:<br><br>" >> .github/scripts-metadata/summary-tutorials-annual-review.md
+          echo "| Path    | Title   | Author  |" >> .github/scripts-metadata/summary-tutorials-annual-review.md
+          echo "| ------- | ------- | ------- |" >> .github/scripts-metadata/summary-tutorials-annual-review.md
+          
           # Get all Markdown files
           md_files=$(find ./tutorials -type f -name "*.en.md")
 
