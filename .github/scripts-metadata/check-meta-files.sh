@@ -8,17 +8,14 @@ updated_variables=".github/scripts-metadata/updated-variables.txt"
 
 echo $markdown_file
 
-# Extract YAML front matter from Markdown file
-metadata=$(awk '/^---$/{f=!f;next}f' "$markdown_file" | yq eval -o=json -)
-
-# Turn the metadata into a JSON file
-echo "$metadata" > "$output_file"
+# Extract YAML front matter from Markdown file and turn it into a JSON file
+metadata=$(awk '/^---$/{f=!f;next}f' "$markdown_file" | yq eval -o=json - > "$output_file")
 
 # Validate metadata against the JSON schema
-npx ajv-cli validate -s "$json_schema" -d "$output_file" --all-errors > "$validate_file" 2>&1
+npx ajv-cli validate -s "$json_schema" -d "$output_file" --all-errors --errors=line > "$validate_file" 2>&1
 
 # Extract error messages from "validate_file"
-awk -F"[ ':]+" '/instancePath/ {key=substr($3, 2); next} /message/ {message=""; for(i=3;i<=NF;i++) message=message $i " "; print key "=" message}' "$validate_file" > "$new_variables"
+cat "$validate_file" | tail -n +2 | jq -r '.[] | "\(.instancePath | ltrimstr("/"))=\(.message)"'  > "$new_variables"
 
 # Check if any keys are missing
 for key in SPDX-License-Identifier path slug date title short_description tags author author_link author_img author_description language available_languages header_img cta; do
