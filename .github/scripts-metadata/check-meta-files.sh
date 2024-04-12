@@ -27,4 +27,6 @@ done
 # Replace the original variable messages with error messages
 awk -F'=' 'NR==FNR{a[$1]=$2; next} {if($1 in a) {$2=a[$1]} print}' OFS='=' "$new_variables" "$variables" > "$updated_variables"
 
+# Update formatting to make it work for `source` and `envsubst`
+sed -i -e 's/SPDX-License-Identifier/license/g' -e "s/^\(.*\)=\(.*\)$/\\1='\2'/g" -e 's/^/export /' "$updated_variables"
 echo "$updated_variables"

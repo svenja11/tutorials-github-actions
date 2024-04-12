@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Test changed-files
     steps:
+      - uses: actions/setup-node@v4
+      - uses: yokawasa/action-setup-kube-tools@v0.11.0
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -30,16 +32,12 @@ jobs:
           ALL_CHANGED_FILES: ${{ steps.changed-markdown-files.outputs.all_changed_files }}
         run: |
           # Install dependencies
-          sudo add-apt-repository ppa:rmescandon/yq
-          sudo apt-get update
-          sudo apt-get install yq
-          sudo apt-get install npm
           npm install ajv-cli
 
           for file in ${ALL_CHANGED_FILES}; do
 
             # Remove the files from the previous loop
-            rm -rf .github/scripts-metadata/meta-converted.json .github/scripts-metadata/validation_result.txt .github/scripts-metadata/new-variables.txt .github/scripts-metadata/updated-variables.txt .github/scripts-metadata/summary-table-temp.md
+            rm -rf .github/scripts-metadata/meta-converted.json .github/scripts-metadata/validation_result.txt .github/scripts-metadata/new-variables.txt .github/scripts-metadata/updated-variables.txt .github/scripts-metadata/summary-table-temp.md .github/scripts-metadata/summary-table-fin.md
 
             # Run the bash script
             bash .github/scripts-metadata/check-meta-files.sh $file
@@ -49,36 +47,9 @@ jobs:
             cp .github/scripts-metadata/summary-table.md .github/scripts-metadata/summary-table-temp.md
 
             # Set variables for markdown table
-            license=$(grep 'SPDX-License-Identifier=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            path=$(grep 'path=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            slug=$(grep 'slug=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            date=$(grep 'date=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            title=$(grep 'title=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            shortdescription=$(grep 'short_description=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            tags=$(grep 'tags=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            author=$(grep 'author=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            linkauthor=$(grep 'author_link=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2 | sed 's/^[ \t]*//;s/[ \t]*$//')
-            imgauthor=$(grep 'author_img=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2 | sed 's/^[ \t]*//;s/[ \t]*$//')
-            descriptionauthor=$(grep 'author_description=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2 | sed 's/^[ \t]*//;s/[ \t]*$//')
-            language=$(grep 'language=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            availablelanguages=$(grep 'available_languages=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            header=$(grep 'header_img=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            cta=$(grep 'cta=' .github/scripts-metadata/updated-variables.txt | cut -d'=' -f2)
-            sed -i 's|$markdown_file|'"$file"'|g; 
-                    s|$license|'"$license"'|g; 
-                    s|$path|'"$path"'|g; 
-                    s|$slug|'"$slug"'|g; 
-                    s|$date|'"$date"'|g; 
-                    s|$title|'"$title"'|g; 
-                    s|$shortdescription|'"$shortdescription"'|g; 
-                    s|$tags|'"$tags"'|g; 
-                    s|$author|'"$author"'|g; 
-                    s|$linkauthor|'"$linkauthor"'|g; 
-                    s|$imgauthor|'"$imgauthor"'|g; 
-                    s|$descriptionauthor|'"$descriptionauthor"'|g; 
-                    s|$language|'"$language"'|g; 
-                    s|$availablelanguages|'"$availablelanguages"'|g; 
-                    s|$header|'"$header"'|g; 
-                    s|$cta|'"$cta"'|g' .github/scripts-metadata/summary-table-temp.md
-            cat .github/scripts-metadata/summary-table-temp.md >> $GITHUB_STEP_SUMMARY
+            sed -i 's|$markdown_file|'"$file"'|g' .github/scripts-metadata/summary-table-temp.md
+            source .github/scripts-metadata/updated-variables.txt
+            envsubst  < .github/scripts-metadata/summary-table-temp.md > .github/scripts-metadata/summary-table-fin.md
+
+            cat .github/scripts-metadata/summary-table-fin.md >> $GITHUB_STEP_SUMMARY
           done
