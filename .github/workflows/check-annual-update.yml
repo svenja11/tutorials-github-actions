@@ -36,6 +36,7 @@ jobs:
             
             # Extract metadata from Markdown file
             metadata=$(yq eval 'select(1)' $file)
+            echo $metadata
 
             # Extract date/path/title/author from the metadata
             tutorial_date=$(echo "$metadata" | yq eval '.date' -)
