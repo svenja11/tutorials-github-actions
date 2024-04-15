@@ -35,8 +35,7 @@ jobs:
           for file in $md_files; do 
             
             # Extract metadata from Markdown file
-            metadata=$(yq eval 'select(1)' $file)
-            echo $metadata
+            metadata=$(awk '/^---$/{f=!f;next}f' "$file" | yq eval -o=json -)
 
             # Extract date/path/title/author from the metadata
             tutorial_date=$(echo "$metadata" | yq eval '.date' -)
