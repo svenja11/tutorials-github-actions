@@ -10,6 +10,7 @@ echo $markdown_file
 
 # Extract YAML front matter from Markdown file and turn it into a JSON file
 metadata=$(head -n 20 "$markdown_file" | awk '/^---$/{f=!f;next}f' | yq eval -o=json - > "$output_file")
+echo "$metadata"
 
 # Validate metadata against the JSON schema
 npx ajv-cli validate -s "$json_schema" -d "$output_file" --all-errors --errors=line > "$validate_file" 2>&1
