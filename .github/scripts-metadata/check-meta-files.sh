@@ -9,7 +9,7 @@ updated_variables=".github/scripts-metadata/updated-variables.txt"
 echo $markdown_file
 
 # Extract YAML front matter from Markdown file and turn it into a JSON file
-metadata=$(awk '/^---$/{f=!f;next}f' "$markdown_file" | yq eval -o=json - > "$output_file")
+metadata=$(head -n 20 "$markdown_file" | awk '/^---$/{f=!f;next}f' | yq eval -o=json - > "$output_file")
 
 # Validate metadata against the JSON schema
 npx ajv-cli validate -s "$json_schema" -d "$output_file" --all-errors --errors=line > "$validate_file" 2>&1
