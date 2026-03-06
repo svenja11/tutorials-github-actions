@@ -1,0 +1,141 @@
+{
+  "verifiable_password_authentication": false,
+  "ssh_key_fingerprints": {
+    "SHA256_ECDSA": "EXAMPLE_ECDSA_FINGERPRINT",
+    "SHA256_ED25519": "EXAMPLE_ED25519_FINGERPRINT",
+    "SHA256_RSA": "EXAMPLE_RSA_FINGERPRINT"
+  },
+  "ssh_keys": [
+    "ssh-ed25519 EXAMPLE_KEY_1",
+    "ecdsa-sha2-nistp256 EXAMPLE_KEY_2",
+    "ssh-rsa EXAMPLE_KEY_3"
+  ],
+  "hooks": [
+    "203.0.113.0/24",
+    "198.51.100.0/24",
+    "192.0.2.0/24",
+    "198.51.101.0/24",
+    "2001:db8::/32",
+    "2001:0db9::/32"
+  ],
+  "web": [
+    "203.0.113.1/32",
+    "198.51.100.1/32",
+    "192.0.2.1/32",
+    "198.51.101.1/32"
+  ],
+  "api": [
+    "203.0.113.2/32",
+    "198.51.100.2/32",
+    "192.0.2.2/32",
+    "198.51.101.2/32"
+  ],
+  "git": [
+    "203.0.113.3/32",
+    "198.51.100.3/32",
+    "192.0.2.3/32",
+    "198.51.101.3/32"
+  ],
+  "github_enterprise_importer": [
+    "203.0.113.4/32",
+    "198.51.100.4/32",
+    "192.0.2.4/32"
+  ],
+  "packages": [
+    "203.0.113.5/32",
+    "198.51.100.5/32",
+    "192.0.2.5/32",
+    "198.51.101.5/32",
+    "203.0.113.6/32"
+  ],
+  "pages": [
+    "203.0.113.7/32",
+    "198.51.100.6/32",
+    "2001:db8:1::1/128"
+  ],
+  "importer": [
+    "203.0.113.8/32",
+    "198.51.100.7/32",
+    "192.0.2.6/32",
+    "198.51.101.6/32",
+    "203.0.113.9/32"
+  ],
+  "actions": [
+    "203.0.113.10/24",
+    "198.51.100.8/24",
+    "192.0.2.7/24",
+    "2001:db8:2::/64",
+    "2001:db8:3::/64"
+  ],
+  "actions_macos": [
+    "203.0.113.11/24",
+    "198.51.100.9/25",
+    "192.0.2.8/31",
+    "198.51.101.7/24"
+  ],
+  "codespaces": [
+    "203.0.113.12/28",
+    "198.51.100.10/28",
+    "192.0.2.9/28",
+    "198.51.101.8/28",
+    "203.0.113.13/28"
+  ],
+  "copilot": [
+    "203.0.113.14/32",
+    "198.51.100.11/32",
+    "192.0.2.10/32"
+  ],
+  "domains": {
+    "website": [
+      "*.example.com",
+      "*.exampleusercontent.com"
+    ],
+    "codespaces": [
+      "*.example.com",
+      "*.api.example.com",
+      "*.microsoft.com"
+    ],
+    "copilot": [
+      "*.example.com",
+      "*.examplecopilot.com"
+    ],
+    "packages": [
+      "mavenregistry.example.net",
+      "*.exampleusercontent.com"
+    ],
+    "actions": [
+      "*.actions.example.com",
+      "productionresults0.blob.example.net",
+      "productionresults1.blob.example.net",
+      "runnerprox1.actions.example.com",
+      "runnerprox2.actions.example.com",
+      "runnerprox3.actions.example.com",
+      "tokenghub.actions.example.com"
+    ],
+    "actions_inbound": {
+      "full_domains": [
+        "example.com",
+        "api.example.com",
+        "codeload.example.com",
+        "objects.exampleusercontent.com",
+        "tokenghub.actions.example.com"
+      ],
+      "wildcard_domains": [
+        "*.exampleusercontent.com",
+        "*.core.example.net",
+        "*.example.com",
+        "example.com",
+        "ghcr.io"
+      ]
+    },
+    "artifact_attestations": {
+      "trust_domain": "",
+      "services": [
+        "*.actions.example.com",
+        "tuf-repo.example.com",
+        "fulcio.exampleapp.com",
+        "timestamp.exampleapp.com"
+      ]
+    }
+  }
+}
